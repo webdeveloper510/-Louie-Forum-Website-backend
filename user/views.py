@@ -33,23 +33,69 @@ def generate_otp():
     return random.randint(100000, 999999)
 
 """User register api"""
+# class UserRegistrationAPIView(APIView):
+#     def post(self, request):
+#         data = request.data
+#         serializer = UserRegistrationSerializer(data=data)
+#         if serializer.is_valid():
+#             user = serializer.save(is_active=True)
+            
+#             return Response({
+#                 "code":"200",
+#                 "message": "User Registered Successfully",
+#                 "user_id": user.id,
+#                 "email": user.email
+#             }, status=status.HTTP_200_OK)
+        
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class UserRegistrationAPIView(APIView):
     def post(self, request):
-        data = request.data
-        serializer = UserRegistrationSerializer(data=data)
+        email = request.data.get("email")
+        username = request.data.get("username")
+
+        if not email:
+            return Response({
+                "code": "400",
+                "message": "Email is required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if not username:
+            return Response({
+                "code": "400",
+                "message": "Username is required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if email already exists
+        if User.objects.filter(email=email).exists():
+            return Response({
+                "code": "400",
+                "message": "Email already exists",
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            return Response({
+                "code": "400",
+                "message": "Username already exists",
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save(is_active=True)
             
             return Response({
-                "code":"200",
+                "code": "200",
                 "message": "User Registered Successfully",
                 "user_id": user.id,
                 "email": user.email
             }, status=status.HTTP_200_OK)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
+        return Response({
+            "code": "400",
+            "message": "Registration failed",
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 ######################################  USER LOGIN ######################################################
 
@@ -68,8 +114,10 @@ class UserLoginView(APIView):
         if not user:
             return Response({
                 "code": "400",
-                "message": "Invalid email or password"
+                "message": "Invalid email or password",
+                "data":{}
             }, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
         # Generate tokens
