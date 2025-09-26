@@ -41,9 +41,9 @@ class UserRegistrationAPIView(APIView):
             user = serializer.save(is_active=True)
             
             return Response({
+                "code": "200",
                 "message": "User Registered Successfully",
-                "user_id": user.id,
-                "email": user.email
+                "data": user.data,
             }, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -65,7 +65,10 @@ class UserLoginView(APIView):
         # user = authenticate(email=email, password=password)
         user = authenticate(request, email=email, password=password)
         if not user:
-            return Response({'error': 'Invalid email or password'}, status=400)
+            return Response({
+                "code": "400",
+                "message": "Invalid email or password"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 
         # Generate tokens
