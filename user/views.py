@@ -41,9 +41,10 @@ class UserRegistrationAPIView(APIView):
             user = serializer.save(is_active=True)
             
             return Response({
-                "code": "200",
+                "code":"200",
                 "message": "User Registered Successfully",
-                "data": user.data,
+                "user_id": user.id,
+                "email": user.email
             }, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
