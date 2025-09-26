@@ -7,6 +7,8 @@ from decouple import config, RepositoryEnv
 
 
 
+ALLOWED_HOSTS = ['*', "insidewar.bettorcenter.com",]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'user',
     'rest_framework',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -157,3 +161,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 AUTH_USER_MODEL = "user.User"
+
+
+CORS_ALLOWED_ORIGINS = [
+    "https://louie-forum.netlify.app",
+]
+
+CORS_ALLOW_CREDENTIALS = True
